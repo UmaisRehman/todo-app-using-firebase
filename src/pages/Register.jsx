@@ -2,18 +2,21 @@
 import { auth } from '../config/firebase/firebaseconfig';
 import React, { useState } from 'react';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import 'bootstrap/dist/css/bootstrap.min.css'; // Ensure Bootstrap is imported
-import './style.css'; // Ensure you import your CSS file
+import 'bootstrap/dist/css/bootstrap.min.css'; 
+import './style.css';
+import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const navigate = useNavigate()
 
     const register = async (e) => {
         e.preventDefault();
         try {
             await createUserWithEmailAndPassword(auth, email, password);
             console.log('User registered successfully');
+            navigate('/login')
         } catch (error) {
             console.error('Error registering user:', error);
         }
@@ -63,7 +66,7 @@ const Register = () => {
                                 className="form-control"
                                 id="confirm password"
                                 placeholder="Confirm password"
-                                value={password}
+                                
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
                             />
