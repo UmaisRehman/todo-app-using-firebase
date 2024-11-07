@@ -6,6 +6,7 @@ import { getAuth, signOut, onAuthStateChanged } from "firebase/auth";
 const Navbar = () => {
     const navigate = useNavigate();
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isNavbarToggled, setIsNavbarToggled] = useState(false); // State for toggling navbar
 
     useEffect(() => {
         const auth = getAuth();
@@ -29,59 +30,88 @@ const Navbar = () => {
             });
     };
 
-    document.body.style.backgroundColor = "#f4f4f4"; 
+    const handleNavbarToggle = () => {
+        setIsNavbarToggled(!isNavbarToggled); // Toggle navbar state
+    };
+
+    document.body.style.backgroundColor = "#f4f4f4";
+
+    // Define the border color based on whether the navbar is toggled
+    const borderColor = isNavbarToggled ? "#0f1056" : "#9FB6C3";  // Default or toggled border color
 
     return (
-        <nav className="navbar navbar-expand-lg" style={{ backgroundColor: "#9FB6C3" }}>
+        <nav className="navbar navbar-expand-lg navbar-light" style={{ backgroundColor: "#9FB6C3", borderColor: "#113065", borderRadius: "10px" }}>
             <div className="container-fluid">
-                <Link className="navbar-brand fw-bold fs-2" to="/">App</Link>
+                <Link className="navbar-brand fw-bold fs-4" to="/">App</Link>
                 <button
                     className="navbar-toggler"
                     type="button"
                     data-bs-toggle="collapse"
                     data-bs-target="#navbarNav"
                     aria-controls="navbarNav"
-                    aria-expanded="false"
+                    aria-expanded={isNavbarToggled ? "true" : "false"} // Set aria-expanded based on state
                     aria-label="Toggle navigation"
+                    onClick={handleNavbarToggle} // Toggle state when clicked
                 >
                     <span className="navbar-toggler-icon"></span>
                 </button>
-                <div className="collapse navbar-collapse" id="navbarNav">
-                    <ul className="navbar-nav gap-2">
+                <div className={`collapse navbar-collapse ${isNavbarToggled ? 'show' : ''}`} id="navbarNav">
+                    <ul className="navbar-nav gap-2 me-auto">
                         <li className="nav-item">
-                            <Link className="nav-link active rounded fw-bold bg-transparent fs-5 px-3 py-2 border border-2" 
-                                  style={{ color: "#0f1056" }} 
-                                  to="/">Home</Link>
+                            <Link
+                                className="nav-link active rounded fw-bold fs-6 px-3 py-2 border"
+                                style={{ borderColor }} // Apply dynamic border color
+                                to="/">Home</Link>
                         </li>
                         <li className="nav-item">
-                            <Link className="nav-link active rounded fw-bold bg-transparent fs-5 px-3 py-2 border border-2" 
-                                  style={{ color: "#0f1056" }} 
-                                  to="/todo">Add Todo</Link>
+                            <Link
+                                className="nav-link active rounded fw-bold fs-6 px-3 py-2 border"
+                                style={{ borderColor }} // Apply dynamic border color
+                                to="/todo">Add Todo</Link>
                         </li>
                     </ul>
-                    <ul className="navbar-nav ms-auto gap-2">
+                    <ul className="navbar-nav gap-2 ms-lg-auto">
                         {!isLoggedIn && (
                             <>
                                 <li className="nav-item">
-                                    <Link className="nav-link active rounded fw-bold bg-transparent px-3 py-2 border border-2" 
-                                          style={{ color: "#0f1056" }} 
-                                          to="/login">Login</Link>
+                                    <Link
+                                        className="nav-link active rounded fw-bold px-3 py-2 border"
+                                        style={{ borderColor }} // Apply dynamic border color
+                                        to="/login">Login</Link>
                                 </li>
                                 <li className="nav-item">
-                                    <Link className="nav-link active rounded fw-bold bg-transparent px-3 py-2 border border-2" 
-                                          style={{ color: "#0f1056" }} 
-                                          to="/register">Register</Link>
+                                    <Link
+                                        className="nav-link active rounded fw-bold px-3 py-2 border"
+                                        style={{ borderColor }} // Apply dynamic border color
+                                        to="/register">Register</Link>
                                 </li>
                             </>
                         )}
                         {isLoggedIn && (
-                            <li className="nav-item border border-2 rounded fw-bold">
-                                <Link className="nav-link active px-3 py-2" onClick={signout} style={{ color: "#0f1056" }}>Sign Out</Link>
+                            <li className="nav-item">
+                                <Link
+                                    className="nav-link active rounded fw-bold px-3 py-2 border"
+                                    onClick={signout}
+                                    style={{ borderColor }} // Apply dynamic border color
+                                >
+                                    Sign Out
+                                </Link>
                             </li>
                         )}
                     </ul>
                 </div>
             </div>
+
+            <style>
+                {`
+                    .navbar-collapse.show {
+                        background-color: #e2e8f0 !important; /* Soft, professional background color */
+                        border-radius: 10px; /* Round corners for the expanded navbar */
+                        border-top: 2px solid #9FB6C3; /* Subtle border color */
+                        margin-top: 10px; /* Auto margin when expanded */
+                    }
+                `}
+            </style>
         </nav>
     );
 };

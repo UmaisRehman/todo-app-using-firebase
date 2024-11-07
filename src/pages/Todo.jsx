@@ -1,15 +1,12 @@
-import { doc, getDoc, updateDoc, deleteDoc, getDocs, query, where } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, deleteDoc, getDocs, query, where, collection, addDoc } from 'firebase/firestore';
 import React, { useEffect, useRef, useState } from 'react';
 import { auth, db } from '../config/firebase/firebaseconfig';
-import { collection, addDoc } from "firebase/firestore";
 
 const Todo = () => {
     const todo = useRef();
     const [todos, setTodos] = useState([]);
     const [editIndex, setEditIndex] = useState(null);
     const [editText, setEditText] = useState('');
-
-
 
     const deleteTodo = async (index) => {
         const itemToDelete = todos[index];
@@ -19,41 +16,42 @@ const Todo = () => {
             return;
         }
 
-        todos.splice(index, 1);
-        setTodos([...todos]);
-
         try {
             await deleteDoc(doc(db, "users", itemToDelete.docid));
             console.log("Document deleted successfully.");
+            setTodos(todos.filter((_, i) => i !== index)); // Remove item from local state
         } catch (error) {
             console.error("Error deleting document: ", error);
         }
     };
 
+    const startEditTodo = (index) => {
+        setEditIndex(index); 
+        setEditText(todos[index].todo); 
+    };
 
-const startEditTodo = (index) => {
-    setEditIndex(index); 
-    setEditText(todos[index].todo); 
-}
+    const saveTodo = async (index) => {
+        const todoItem = todos[index];
 
-const saveTodo = async (index) => {
-    todos[index].todo = editText;
-    setTodos([...todos]);
-    setEditIndex(null); 
+        if (!todoItem || !todoItem.docid) {
+            console.error("Error: todoItem or docid is undefined.");
+            return;
+        }
 
-    try {
-        const todoRef = doc(db, "users", todos[index].docid);
+        try {
+            const todoRef = doc(db, "users", todoItem.docid);
+            await updateDoc(todoRef, { todo: editText });
+            console.log("Todo updated successfully in Firebase.");
 
-        await updateDoc(todoRef, {
-            todo: editText
-        });
-        console.log("Todo updated successfully in Firebase.");
-    } catch (error) {
-        console.error("Error updating todo in Firebase: ", error);
-    }
-
-    setEditText(''); 
-};
+            const updatedTodos = [...todos];
+            updatedTodos[index].todo = editText;
+            setTodos(updatedTodos);
+            setEditIndex(null);
+            setEditText('');
+        } catch (error) {
+            console.error("Error updating todo in Firebase: ", error);
+        }
+    };
 
     useEffect(() => {
         const getdbFromFirebase = async () => {
@@ -75,55 +73,53 @@ const saveTodo = async (index) => {
 
     const addTodo = async (event) => {
         event.preventDefault();
-        const newTodo = todo.current.value;
-
-        setTodos([...todos, { todo: newTodo }]);
+        const newTodoText = todo.current.value;
 
         try {
             const docRef = await addDoc(collection(db, "users"), {
-                todo: newTodo,
+                todo: newTodoText,
                 uid: auth.currentUser.uid
             });
             console.log("Document written with ID: ", docRef.id);
+
+            setTodos([...todos, { todo: newTodoText, docid: docRef.id }]);
+            todo.current.value = '';
         } catch (e) {
             console.error("Error adding document: ", e);
         }
-        todo.current.value = '';
     };
 
     return (
         <>
-            <div className="container shadow d-flex flex-column align-items-center mt-5">
-                <form className="d-flex gap-3 mb-5 mt-5" onSubmit={addTodo}>
+            <div className="container shadow d-flex flex-column align-items-center mt-5 px-3">
+                <form className="d-flex gap-3 mb-5 mt-5 w-100" onSubmit={addTodo}>
                     <input
                         type="text"
                         ref={todo}
                         className="form-control border border-black"
                         placeholder="Enter a task"
-                        style={{ width: '250px' }}
+                        style={{ maxWidth: '500px' }} // Set a max width for input
                     />
                     <button className="btn btn-info border border-white text-white border-2" type="submit" style={{ backgroundColor: "#113065" }}>Add Todo</button>
                 </form>
-                <ol className="list-group mt-3 mb-5" style={{ width: '800px' }}>
+                <ol className="list-group mt-3 mb-5 w-100">
                     {todos.map((item, index) => (
                         <li key={index} className="mt-1 mb-1 list-group-item d-flex justify-content-between align-items-center">
                             {editIndex === index ? (
-                                // Inline editing input when editing
                                 <input
                                     type="text"
                                     value={editText}
                                     onChange={(e) => setEditText(e.target.value)}
+                                    className="form-control"
+                                    style={{ maxWidth: '300px' }} // Set max width for input when editing
                                 />
                             ) : (
-                                // Display the todo text when not editing
                                 item.todo
                             )}
                             <div>
                                 {editIndex === index ? (
-                                    // Save button when editing
                                     <button className="rounded btn btn-sm btn-success me-1" onClick={() => saveTodo(index)}>Save</button>
                                 ) : (
-                                    // Edit button when not editing
                                     <button className="rounded btn btn-sm btn-primary me-1" onClick={() => startEditTodo(index)}>Edit</button>
                                 )}
                                 <button className="rounded btn btn-sm btn-danger" onClick={() => deleteTodo(index)}>Delete</button>

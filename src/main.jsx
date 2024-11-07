@@ -6,6 +6,7 @@ import Home from './pages/Home'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import ProtectedRoutes from './components/ProtectedRoutes'
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import Todo from './pages/Todo'
 const router = createBrowserRouter([
   {
