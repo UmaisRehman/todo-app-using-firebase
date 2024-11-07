@@ -31,23 +31,19 @@ const Todo = () => {
     };
 
 
-   // Starts editing the selected todo
 const startEditTodo = (index) => {
-    setEditIndex(index); // Set the index of the todo being edited
-    setEditText(todos[index].todo); // Set the current text of the todo in the edit field
+    setEditIndex(index); 
+    setEditText(todos[index].todo); 
 }
 
-// Saves the edited todo back to Firebase and updates the state
 const saveTodo = async (index) => {
-    todos[index].todo = editText; // Update the todo text in the local array
-    setTodos([...todos]); // Update the state with the modified todos array
-    setEditIndex(null); // Clear the edit index to exit edit mode
+    todos[index].todo = editText;
+    setTodos([...todos]);
+    setEditIndex(null); 
 
     try {
-        // Get a reference to the specific document to update using the todo's docid
         const todoRef = doc(db, "users", todos[index].docid);
 
-        // Update the "todo" field in Firebase with the new edited text
         await updateDoc(todoRef, {
             todo: editText
         });
@@ -56,7 +52,7 @@ const saveTodo = async (index) => {
         console.error("Error updating todo in Firebase: ", error);
     }
 
-    setEditText(''); // Clear the edit text field
+    setEditText(''); 
 };
 
     useEffect(() => {
