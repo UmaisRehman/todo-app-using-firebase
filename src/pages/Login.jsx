@@ -30,9 +30,14 @@ const Login = () => {
     return (
 
         <div className="container mt-5">
-            <div className="card shadow mx-auto transparent-card" style={{ maxWidth: '400px' }}>
+            <div className="card shadow mx-auto " style={{
+                maxWidth: '400px',
+                backgroundColor: 'rgba(255, 255, 255, 0.5)', // Corrected to camelCase
+                border: 'none'
+
+            }}>
                 <div className="card-body">
-                    <h2 className="text-center mb-4" style={{color : "#000"}}>Login</h2>
+                    <h2 className="text-center mb-4" style={{ color: "#000" }}>Login</h2>
                     <form onSubmit={login}>
                         <div className="mb-3">
                             {/* <label htmlFor="email" className="form-label">Email</label> */}
@@ -57,7 +62,7 @@ const Login = () => {
                             />
                         </div>
                         {error && <div className="alert alert-danger">{error}</div>} {/* Error message display */}
-                        <button type="submit" className="btn  w-100 fw-bold border text-white rounded border-3 "style={{backgroundColor: "#113065"}} 
+                        <button type="submit" className="btn  w-100 fw-bold border text-white rounded border-3 " style={{ backgroundColor: "#113065" }}
                         >Login</button>
                     </form>
                 </div>

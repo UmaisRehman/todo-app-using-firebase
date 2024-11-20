@@ -3,7 +3,6 @@ import { auth } from '../config/firebase/firebaseconfig';
 import React, { useState } from 'react';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import 'bootstrap/dist/css/bootstrap.min.css'; 
-import './style.css';
 import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
@@ -24,7 +23,12 @@ const Register = () => {
 
     return (
         <div className="container mt-5">
-            <div className="card shadow mx-auto transparent-card" style={{ maxWidth: '400px' }}>
+            <div className="card shadow mx-auto " style={{ 
+            maxWidth: '400px', 
+            backgroundColor: 'rgba(255, 255, 255, 0.5)',
+            border: 'none'
+                
+            }}>
                 <div className="card-body">
                 <h2 className="text-center mb-4">Register</h2>
 
