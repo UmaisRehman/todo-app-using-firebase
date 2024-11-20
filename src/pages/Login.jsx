@@ -1,4 +1,3 @@
-import './style.css'; // Ensure you import your CSS file
 import { auth } from '../config/firebase/firebaseconfig';
 import React, { useRef, useState } from 'react';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
